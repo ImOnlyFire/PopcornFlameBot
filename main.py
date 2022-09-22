@@ -169,7 +169,7 @@ async def on_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 def main() -> None:
     """Starts the bot."""
-    token = open("token.txt", "a+").readline()
+    token = open("token.txt", "a+").readline().strip()
     application = ApplicationBuilder().token(token).build()
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("popcorn", popcorn)],
