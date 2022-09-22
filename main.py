@@ -120,6 +120,11 @@ async def remove_group(group_id: int, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def flame(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     group_id = update.effective_chat.id
 
+    admins = await context.bot.get_chat_administrators(group_id)
+    if update.effective_user.id not in [admin.user.id for admin in admins]:
+        await update.message.reply_text("Solo gli admin possono usare questo comando.")
+        return
+
     if update.message.chat.type == "private":
         await update.message.reply_text("Non puoi usare questo comando in privato.")
         return
