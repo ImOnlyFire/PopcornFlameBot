@@ -9,7 +9,7 @@ from telegram import (
     ReplyKeyboardRemove,
     ForceReply,
     InlineKeyboardButton,
-    InlineKeyboardMarkup
+    InlineKeyboardMarkup,
 )
 from telegram.ext import (
     ApplicationBuilder,
@@ -17,7 +17,8 @@ from telegram.ext import (
     ConversationHandler,
     MessageHandler,
     filters,
-    ContextTypes, CallbackQueryHandler,
+    ContextTypes,
+    CallbackQueryHandler
 )
 
 logger.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logger.INFO)
@@ -120,13 +121,13 @@ async def remove_group(group_id: int, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def flame(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     group_id = update.effective_chat.id
 
+    if update.message.chat.type == "private":
+        await update.message.reply_text("Non puoi usare questo comando in privato.")
+        return
+
     admins = await context.bot.get_chat_administrators(group_id)
     if update.effective_user.id not in [admin.user.id for admin in admins]:
         await update.message.reply_text("Solo gli admin possono usare questo comando.")
-        return
-
-    if update.message.chat.type == "private":
-        await update.message.reply_text("Non puoi usare questo comando in privato.")
         return
 
     if group_id not in flame_enabled_groups:
@@ -147,6 +148,25 @@ async def flame(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     asyncio.gather(remove_group(group_id, context))
 
 
+async def on_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    keyboard = [
+        [
+            InlineKeyboardButton("GitHub", callback_data="0", url="https://github.com/ImOnlyFire/PopcornFlameBot"),
+        ],
+    ]
+
+    if update.message.new_chat_members[0].id == context.bot.id:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="🍿 <b>Ciao</b>, grazie per avermi aggiunto al gruppo!\n"
+                 "<i>C'è un flame nel gruppo? Mangia i popcorn e goditi lo spettacolo!</i>\n\n"
+                 "Gli admin potranno utilizzare /flame in caso di un flame, e in questo periodo "
+                 "i popcorn li offriremo <b>gratuitamente</b> a tutti gli utenti del gruppo. (/popcorn)",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
+
+
 def main() -> None:
     """Starts the bot."""
     token = open("token.txt", "r").readline()
@@ -164,6 +184,7 @@ def main() -> None:
     )
     application.add_handler(conv_handler)
 
+    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_join))
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(CommandHandler('flame', flame))
     application.add_error_handler(error_handler)
