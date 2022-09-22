@@ -128,8 +128,8 @@ async def remove_group(group_id: int, context: ContextTypes.DEFAULT_TYPE) -> Non
         flame_enabled_groups.remove(group_id)
         await context.bot.send_message(
             chat_id=group_id,
-            text="💧 Il gruppo e' stato automaticamente rimosso dalla lista dei flame abilitati. "
-                 "Se c'e' ancora un flame in corso, chiedi ad un admin di digitare /flame",
+            text="💧 Il gruppo è stato automaticamente rimosso dalla lista dei flame abilitati. "
+                 "Se c'è ancora un flame in corso, chiedi ad un admin di digitare /flame",
         )
 
 
