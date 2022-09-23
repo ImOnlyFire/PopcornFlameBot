@@ -86,7 +86,7 @@ async def popcorn_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     )
 
     # Set a timer just for fun
-    time.sleep(random.randint(1, 5))
+    asyncio.sleep(random.randint(1, 5))
 
     await message.edit_text(
         text=f"<a href=\"{popcorn_image_link}\">&#8205</a>"
