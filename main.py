@@ -38,7 +38,7 @@ from telegram.ext import (
 
 logger.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logger.INFO)
 
-popcorn_types = ["Classico", "Cioccolato", "Extra Salato", "Miele", "Caramellato", "Sborra"]
+popcorn_types = ["Classico", "Cioccolato", "Extra Salato", "Miele", "Caramellato"]
 popcorn_image_link = 'https://i.imgur.com/2E5Tf9F.png'
 POPCORN_TYPE = range(1)
 feedback_keyboard = [
