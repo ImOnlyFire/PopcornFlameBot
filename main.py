@@ -19,7 +19,6 @@ import random
 from datetime import timedelta
 
 from telegram import (
-    ReplyKeyboardRemove,
     ForceReply,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -30,7 +29,6 @@ from telegram.ext import (
     ConversationHandler,
     MessageHandler,
     filters,
-    ContextTypes,
     CallbackQueryHandler
 )
 
@@ -39,8 +37,6 @@ from lang import *
 
 logger.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logger.INFO)
 
-popcorn_types = ["Burro", "Caramellato", "Cioccolato", "Classico", "Extra Salato", "Mela Verde", "Miele"]
-popcorn_image_link = 'https://i.imgur.com/2E5Tf9F.png'
 POPCORN_TYPE = range(1)
 feedback_keyboard = [
     [
@@ -166,7 +162,7 @@ async def on_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 def main() -> None:
     """Starts the bot."""
-    token = open("token.txt", "a+").readline().strip()
+    token = open("token.txt", "r+").readline().strip()
     application = ApplicationBuilder().token(token).build()
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("popcorn", popcorn)],

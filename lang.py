@@ -1,4 +1,5 @@
-from main import popcorn_types, popcorn_image_link
+popcorn_types = ["Burro", "Caramellato", "Cioccolato", "Classico", "Extra Salato", "Mela Verde", "Miele"]
+popcorn_image_link = 'https://i.imgur.com/2E5Tf9F.png'
 
 popcorn_preparation = f"""
         <b>Popcorn stand!</b>
