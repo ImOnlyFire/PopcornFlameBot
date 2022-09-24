@@ -15,8 +15,8 @@
 # —————————————————————————————
 from datetime import timedelta
 from handler import *
+from lang import *
 import logging as logger
-import time
 import random
 import asyncio
 
@@ -53,25 +53,18 @@ flame_enabled_groups = []
 
 # noinspection PyUnusedLocal
 async def popcorn(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int | range:
-    """Starts the conversation."""
+    # Starts the conversation
     if update.message.chat.type == "private":
-        await update.message.reply_text("Non puoi usare questo comando in privato.")
+        await update.message.reply_text(private_chat_not_supported)
         return ConversationHandler.END
 
     if update.message.chat.id not in flame_enabled_groups:
-        await update.message.reply_text(
-            "Per poter ordinare i popcorn, deve esserci un flame attivo nel gruppo.\n"
-            "Chiedi ad un admin di digitare /flame se c'e' un flame in corso.")
+        await update.message.reply_text(no_flame_currently_active)
         return ConversationHandler.END
 
-    await update.message.reply_text(
-        "<b>Popcorn stand!</b> 🍿\n"
-        "Durante le sessioni di flame, i popcorn li offriamo <b>gratuitamente</b>.\n\n"
-        f"<b>Gusti disponibili</b> ⟩\n"
-        f"<i>{', '.join(popcorn_types)}</i>\n\n"
-        "Digita /cancel se hai perso la fame\n\n"
-        "°°°·.°·..·°¯°·._.·   🎀  🍿  🎀   ·._.·°¯°·..·°.·°°°",
-        reply_markup=ForceReply(selective=True, input_field_placeholder="Scegli il gusto"),
+    preparation = await update.message.reply_text(
+        popcorn_preparation,
+        reply_markup=ForceReply(selective=True, input_field_placeholder=input_field_select_flavour),
         parse_mode="HTML"
     )
 
@@ -79,22 +72,14 @@ async def popcorn(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int | r
 
 
 async def popcorn_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    message = await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Stiamo preparando i tuoi popcorn...",
-        reply_to_message_id=update.message.message_id,
-    )
+    message = await context.bot.send_message(chat_id=update.effective_chat.id, text=preparing_popcorn,
+                                             reply_to_message_id=update.message.message_id)
 
     # Set a timer just for fun
-    asyncio.sleep(random.randint(1, 5))
+    await asyncio.sleep(random.randint(1, 5))
 
     await message.edit_text(
-        text=f"<a href=\"{popcorn_image_link}\">&#8205</a>"
-             f"🍿 <b>I tuoi popcorn sono pronti!</b> 🍿\n"
-             f" ➜ 🥂 Gusto › {update.message.text.capitalize()}\n"
-             f" ➜ 💶 Costo › 0€\n\n"
-             "Grazie per aver scelto il nostro stand! <b>Buona visione</b>\n\n"
-             "<i>(Se ti piacciono i nostri popcorn, per favore lascia un feedback!)</i>",
+        text=popcorn_ready.format(update.message.text.capitalize()),
         parse_mode="HTML",
         reply_markup=feedback_reply_markup,
     )
@@ -104,20 +89,20 @@ async def popcorn_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
 # noinspection PyUnusedLocal
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Cancels and ends the conversation."""
-    await update.message.reply_text("Acquisto cancellato.", reply_markup=ReplyKeyboardRemove())
+    # Cancels and ends the conversation
+    await update.message.reply_text(order_canceled, reply_markup=ReplyKeyboardRemove())
 
     return ConversationHandler.END
 
 
 # noinspection PyUnusedLocal
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Parses the CallbackQuery and updates the message text."""
+    # Parses the CallbackQuery and updates the message text
     query = update.callback_query
 
     # CallbackQueries need to be answered, even if no notification to the user is needed
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
-    await query.answer(text="Grazie per il feedback!")
+    await query.answer(text=feedback_thanks)
 
     await query.edit_message_reply_markup(reply_markup=None)
 
@@ -126,37 +111,27 @@ async def remove_group(group_id: int, context: ContextTypes.DEFAULT_TYPE) -> Non
     await asyncio.sleep(timedelta(minutes=25).seconds)
     if group_id in flame_enabled_groups:
         flame_enabled_groups.remove(group_id)
-        await context.bot.send_message(
-            chat_id=group_id,
-            text="💧 Il gruppo è stato automaticamente rimosso dalla lista dei flame abilitati. "
-                 "Se c'è ancora un flame in corso, chiedi ad un admin di digitare /flame",
-        )
+        await context.bot.send_message(chat_id=group_id, text=flame_automatically_disabled)
 
 
 async def flame(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     group_id = update.effective_chat.id
 
     if update.message.chat.type == "private":
-        await update.message.reply_text("Non puoi usare questo comando in privato.")
+        await update.message.reply_text(private_chat_not_supported)
         return
 
     admins = await context.bot.get_chat_administrators(group_id)
     if update.effective_user.id not in [admin.user.id for admin in admins]:
-        await update.message.reply_text("Solo gli admin possono usare questo comando.")
+        await update.message.reply_text(only_admins_command)
         return
 
     if group_id not in flame_enabled_groups:
         flame_enabled_groups.append(group_id)
-        await update.message.reply_text(
-            "<b>🔥 Attivata la modalità flame</b>\n\n"
-            "Da questo momento in poi, i popcorn li offriamo <b>gratuitamente</b>!\n"
-            "Digita /popcorn per ordinare i popcorn\n\n"
-            "<i>La modalità flame resterà attivata per 25 minuti. </i>"
-            "<i>Se vuoi disattivarla, chiedi ad un admin di digitare /flame</i>",
-            parse_mode="HTML")
+        await update.message.reply_text(flame_mode_enabled, parse_mode="HTML")
     else:
         flame_enabled_groups.remove(group_id)
-        await update.message.reply_text("<b>💧 Modalità flame disattivata</b>", parse_mode="HTML")
+        await update.message.reply_text(flame_mode_disabled, parse_mode="HTML")
 
     print(flame_enabled_groups)
     # noinspection PyAsyncCall
@@ -173,10 +148,7 @@ async def on_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.new_chat_members[0].id == context.bot.id:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="🍿 <b>Ciao</b>, grazie per avermi aggiunto al gruppo!\n"
-                 "<i>C'è un flame nel gruppo? Mangia i popcorn e goditi lo spettacolo!</i>\n\n"
-                 "Gli admin potranno utilizzare /flame in caso di un flame, e in questo periodo "
-                 "i popcorn li offriremo <b>gratuitamente</b> a tutti gli utenti del gruppo. (/popcorn)",
+            text=bot_joined,
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
