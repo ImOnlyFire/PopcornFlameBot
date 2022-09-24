@@ -13,12 +13,10 @@
 # ⠀⠀⠀⡟⡾⣿⢿⢿⢵⣽⣾⣼⣘⢸⢸⣞⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 # ⠀⠀⠀⠀⠁⠇⠡⠩⡫⢿⣝⡻⡮⣒⢽⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 # —————————————————————————————
-from datetime import timedelta
-from handler import *
-from lang import *
+import asyncio
 import logging as logger
 import random
-import asyncio
+from datetime import timedelta
 
 from telegram import (
     ReplyKeyboardRemove,
@@ -35,6 +33,9 @@ from telegram.ext import (
     ContextTypes,
     CallbackQueryHandler
 )
+
+from handler import *
+from lang import *
 
 logger.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logger.INFO)
 
@@ -62,12 +63,21 @@ async def popcorn(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int | r
         await update.message.reply_text(no_flame_currently_active)
         return ConversationHandler.END
 
-    preparation = await update.message.reply_text(
-        popcorn_preparation,
-        reply_markup=ForceReply(selective=True, input_field_placeholder=input_field_select_flavour),
-        parse_mode="HTML"
-    )
+    reply_markup = ForceReply(selective=True, input_field_placeholder=input_field_select_flavour)
 
+    if update.message is not None:
+        preparation = await update.message.reply_text(
+            text=popcorn_preparation,
+            reply_markup=reply_markup,
+            parse_mode="HTML"
+        )
+    else:
+        preparation = await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=popcorn_preparation,
+            reply_markup=reply_markup,
+            parse_mode="HTML"
+        )
     return POPCORN_TYPE
 
 
