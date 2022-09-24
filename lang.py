@@ -15,7 +15,7 @@ Digita /cancel se hai perso la fame
 
 popcorn_ready = f"""
 <a href=\"{popcorn_image_link}\">&#8205</a>🍿 <b>I tuoi popcorn sono pronti!</b> 🍿
- ➜ 🥂 Gusto › %s
+ ➜ 🥂 Gusto › {type}
  ➜ 💶 Costo › 0€
 
 Grazie per aver scelto il nostro stand! <b>Buona visione</b>
