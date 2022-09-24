@@ -2,7 +2,7 @@ popcorn_types = ["Burro", "Caramellato", "Cioccolato", "Classico", "Extra Salato
 popcorn_image_link = 'https://i.imgur.com/2E5Tf9F.png'
 
 popcorn_preparation = f"""
-<b>Popcorn stand!</b>
+🍿 <b>Popcorn stand!</b>
 Durante le sessioni di flame, i popcorn li offriamo <b>gratuitamente</b>.
 
 <b>Gusti disponibili</b> ⟩
@@ -14,8 +14,7 @@ Digita /cancel se hai perso la fame
 """
 
 popcorn_ready = f"""
-<a href=\"{popcorn_image_link}\">&#8205</a>
-🍿 <b>I tuoi popcorn sono pronti!</b> 🍿
+<a href=\"{popcorn_image_link}\">&#8205</a>🍿 <b>I tuoi popcorn sono pronti!</b> 🍿
  ➜ 🥂 Gusto › %s
  ➜ 💶 Costo › 0€
 
@@ -27,12 +26,12 @@ Grazie per aver scelto il nostro stand! <b>Buona visione</b>
 no_flame_currently_active = """
 Per poter ordinare i popcorn, deve esserci un flame attivo nel gruppo.
 Chiedi ad un admin di digitare /flame se c'e' un flame in corso.
-    """
+"""
 
 flame_automatically_disabled = """
 💧 Il gruppo è stato automaticamente rimosso dalla lista dei flame abilitati. 
 Se c'è ancora un flame in corso, chiedi ad un admin di digitare /flame
-    """
+"""
 
 flame_mode_enabled = """
 🔥 <b>Modalità flame abilitata</b>
