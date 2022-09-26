@@ -83,10 +83,10 @@ async def popcorn_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                                              reply_to_message_id=update.message.message_id)
 
     # Set a timer just for fun
-    time.sleep(random.randint(1, 5))
+    await asyncio.sleep(random.randint(1, 5))
 
     await message.edit_text(
-        text=popcorn_ready.format(type=update.message.text.capitalize()),
+        text=popcorn_ready % update.message.text.capitalize(),
         parse_mode="HTML",
         reply_markup=feedback_reply_markup,
     )
@@ -140,7 +140,6 @@ async def flame(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         flame_enabled_groups.remove(group_id)
         await update.message.reply_text(flame_mode_disabled, parse_mode="HTML")
 
-    print(flame_enabled_groups)
     # noinspection PyAsyncCall
     asyncio.gather(remove_group(group_id, context))
 
