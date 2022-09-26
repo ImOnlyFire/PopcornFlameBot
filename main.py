@@ -82,7 +82,7 @@ async def popcorn_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                                              reply_to_message_id=update.message.message_id)
 
     # Set a timer just for fun
-    asyncio.sleep(random.randint(1, 5))
+    time.sleep(random.randint(1, 5))
 
     await message.edit_text(
         text=popcorn_ready.format(type=update.message.text.capitalize()),
