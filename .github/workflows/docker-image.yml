@@ -7,6 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
+    - name: docker build python
       run: |
-        docker build main/python:1.0.0
+        docker build ./python -t main/python:1.0.0
